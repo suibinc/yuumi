@@ -1,0 +1,32 @@
+{
+  "name": "yuumi-server",
+  "version": "0.0.1",
+  "description": "yuumi server lib.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/suibinc/yuumi.git"
+  },
+  "keywords": [
+    "yuumi",
+    "yuumi-server"
+  ],
+  "author": "suibincheng",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/suibinc/yuumi-server/issues"
+  },
+  "homepage": "https://github.com/suibinc/yuumi-server#readme",
+  "dependencies": {
+    "ejs": "^2.6.1",
+    "koa-router": "^7.4.0",
+    "lru-cache": "^5.1.1",
+    "vue-server-renderer": "^2.6.10"
+  },
+  "devDependencies": {
+    "koa": "^2.7.0"
+  }
+}
