@@ -23,7 +23,7 @@ const fixContentType = s => {
     }, {});
 };
 
-const _request = (options) => {
+const _request = options => {
     const u = new URL(options.url);
     const _options = Object.assign({}, {
         registerCancel: function () {
@@ -111,7 +111,7 @@ const _request = (options) => {
     })
 };
 
-module.exports = (options) => {
+module.exports = options => {
     if (Array.isArray(options)) {
         return Promise.all(options.map(ops => {
             return _request(ops);

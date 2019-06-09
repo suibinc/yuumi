@@ -1,8 +1,9 @@
 const request = require('../request');
 const { vueRender } = require('../renderer/vue-renderer');
 
-module.exports = function (app, yuumi, cacheSvr) {
+module.exports = function (app, yuumi) {
     app.context.getVueResources = async function (appName) {
+        let cacheSvr = yuumi.getCacheSvr();
         if (cacheSvr && cacheSvr.get) {
             let result = cacheSvr.get(appName);
             if (result) {
@@ -14,7 +15,7 @@ module.exports = function (app, yuumi, cacheSvr) {
         if (!config) {
             throw Error('请正确检查Neeko服务配置');
         }
-        let urls = [config.template, config.manifest, config.bundle];
+        let urls = [{ url: config.template }, { url: config.manifest }, { url: config.bundle }];
         let data = await request(urls);
 
         let result = {

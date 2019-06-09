@@ -1,5 +1,6 @@
 const request = require('./framework/request');
 const defaultOptions = require('./defaultOptions');
+const { CURRENT_VERSION, compareVersion } = require('./framework/version');
 
 const Yuumi = function (options) {
     if (this instanceof Yuumi) {
@@ -11,18 +12,50 @@ const Yuumi = function (options) {
 Yuumi.prototype.create = function (options) {
     this._options = Object.assign({}, defaultOptions, options);
     this._version = {};
+    this.cacheSvr = undefined;
 };
 
-Yuumi.prototype.register = function (options) {
-    this.config(options);
+Yuumi.prototype.setCacheSvr = function (cacheSvr = {}) {
+    if (typeof cacheSvr.get === 'function' && typeof cacheSvr.set === 'function' && typeof cacheSvr.del === 'function') {
+        this.cacheSvr = cacheSvr;
+    }
+};
+
+Yuumi.prototype.getCacheSvr = function () {
+    return this.cacheSvr;
+};
+
+Yuumi.prototype.neeko = function (serverUrl) {
+    if (typeof serverUrl === 'string') {
+        this.config('serverUrl', serverUrl);
+    }
     return new Promise((resolve, reject) => {
         if (this._options.serverUrl) {
             request({
+                method: 'get',
                 url: this._options.serverUrl,
-                method: 'get'
+                params: {
+                    tree: this._options.neekoTree,
+                    token: this._options.neekoToken
+                }
             }).then(res => {
-                if (res.status === 200) {
-                    this._version = res.data || {};
+                if (res.status === 200 && res.data) {
+                    let data = res.data || {};
+
+                    let minVer = data.minVer || 0;
+                    if (CURRENT_VERSION < minVer) {
+                        reject(new Error('unsupported version.'));
+                        return;
+                    }
+
+                    let newVer = data.version || {};
+                    if (this.cacheSvr && typeof this.cacheSvr.del === 'function') {
+                        let diff = compareVersion(this._version, newVer);
+                        diff.forEach(key => {
+                            this.cacheSvr.del(key);
+                        });
+                    }
+                    this._version = newVer;
                     resolve(this._version);
                 } else {
                     reject(res);
